@@ -1,117 +1,111 @@
 from tkinter import *
 from tkinter import messagebox
+from threading import Thread
+from socket import *
 
 window = Tk()
-window.title("Tic Tac Toe Game")
+window.title("Client")
 window.geometry("500x300")
 
 lbl=Label(window,text="Tic-tac-toe Game",font=('Helvetica','15'))
 lbl.grid(row=0,column=0)
-lbl=Label(window,text="Player 1: X",font=('Helvetica','10'))
+lbl=Label(window,text="Server: X",font=('Helvetica','10'))
 lbl.grid(row=1,column=0)
-lbl=Label(window,text="Player 2: O",font=('Helvetica','10'))
+lbl=Label(window,text="Client: O",font=('Helvetica','10'))
 lbl.grid(row=2,column=0)
 
-turn = 1
+player = 2
 
 def clickbtn1():
-    global turn
-    if btn1["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn1["text"] = "X"
-        elif turn == 2:
-            turn = 1
-            btn1["text"] = "O"
+    global player
+    if player == 2:
+        player = 1
+        btn1["text"] = "O"
+        sendplay(1)
         check()
 def clickbtn2():
-    global turn
+    global player
     if btn2["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn2["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn2["text"] = "O"
+            sendplay(2)
         check()
 
 def clickbtn3():
-    global turn
+    global player
     if btn3["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn3["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn3["text"] = "O"
+            sendplay(3)
         check()
 
 def clickbtn4():
-    global turn
+    global player
     if btn4["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn4["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn4["text"] = "O"
+            sendplay(4)
         check()
 
 def clickbtn5():
-    global turn
+    global player
     if btn5["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn5["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn5["text"] = "O"
+            sendplay(5)
         check()
 
 def clickbtn6():
-    global turn
+    global player
     if btn6["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn6["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn6["text"] = "O"
+            sendplay(6)
         check()
 
 def clickbtn7():
-    global turn
+    global player
     if btn7["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn7["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn7["text"] = "O"
+            sendplay(7)
         check()
 
 def clickbtn8():
-    global turn
+    global player
     if btn8["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn8["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn8["text"] = "O"
+            sendplay(8)
         check()
 
 def clickbtn9():
-    global turn
+    global player
     if btn9["text"] == " ":
-        if turn == 1:
-            turn = 2
-            btn9["text"] = "X"
-        elif turn == 2:
-            turn = 1
+        if player == 2:
+            player = 1
             btn9["text"] = "O"
+            sendplay(9)
         check()
 
+buttonlist=list()
+client = socket(AF_INET, SOCK_STREAM)
+host='127.0.0.1'
+port=7228
+# Connect to the server
+client.connect((host,port ))
+
+def sendplay(buttonNum):
+    buttonNum=str(buttonNum)
+    buttonNum = buttonNum.encode()
+    client.send(buttonNum)
 flag = 1
 def check():
     global flag
@@ -149,7 +143,24 @@ def winplayer(winner):
     result = "Game complete " + winner + " wins "
     messagebox.showinfo("Congrats:)",result)
     window.destroy()
+def recievemessage():
+    while True:
+        btn=client.recv(10)
+        decodemessage(btn)
+def decodemessage(btn):
+    btn=btn.decode()
+    btn=int(btn)
+    handlemessage(btn)
+def handlemessage(btn):
+    global player
+    buttonlist[btn-1]["text"]="X"
+    player=2
 
+
+
+
+thread=Thread(target=recievemessage)
+thread.start()
 
 def reset_game():
     global flag
@@ -167,22 +178,31 @@ def reset_game():
 
 btn1 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn1)
 btn1.grid(row = 1, column = 1)
+buttonlist.append(btn1)
 btn2 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn2)
 btn2.grid(row = 1, column = 2)
+buttonlist.append(btn2)
 btn3 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn3)
 btn3.grid(row = 1, column = 3)
+buttonlist.append(btn3)
 btn4 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn4)
 btn4.grid(row = 2, column = 1)
+buttonlist.append(btn4)
 btn5 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn5)
 btn5.grid(row = 2, column = 2)
+buttonlist.append(btn5)
 btn6 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn6)
 btn6.grid(row = 2, column = 3)
+buttonlist.append(btn6)
 btn7 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn7)
 btn7.grid(row = 3, column = 1)
+buttonlist.append(btn7)
 btn8 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn8)
 btn8.grid(row = 3, column = 2)
+buttonlist.append(btn8)
 btn9 = Button(window,text=" ",bg="white",fg="black",width=3,height=1,font=('Helvetica','20'),command=clickbtn9)
 btn9.grid(row = 3, column = 3)
+buttonlist.append(btn9)
 reset_button = Button(window, text="Reset",bg="white",fg="black",width=8,height=1,font=('Helvetica','10'), command=reset_game)
 reset_button.grid(row=5, column=1, columnspan=5,pady=7)
 
